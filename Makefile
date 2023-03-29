@@ -1,7 +1,7 @@
 SRCDIR := ./src
 
 CC = gcc
-CFLAGS = -std=c99 -Wall -g -fsanitize=address,undefined -Iinclude -DDEBUG=0
+CFLAGS = -std=c99 -Wall -g -fsanitize=address,undefined -Iinclude -DDEBUG=1
 
 VPATH = src:../include include
 

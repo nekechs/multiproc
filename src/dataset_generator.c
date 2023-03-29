@@ -20,8 +20,12 @@ int generate_file(const char * path, unsigned int num_keys, unsigned int num_tot
 
     const double percentage = ((double)num_keys) / num_total;
 
+    if(DEBUG) {
+        printf("%f\n", percentage);
+    }
+
     unsigned int keys_left = num_keys;
-    for(int i = 0; i < num_keys; i++) {
+    for(int i = 0; i < num_total; i++) {
         if(keys_left && (rand_fp() < percentage)) {
             // Here, we want to insert a hidden key into the file.
             keys_left--;
