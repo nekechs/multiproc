@@ -4,8 +4,13 @@
 #include "dataset_generator.h"
 #include "random.h"
 
+#ifndef DEBUG
+#define DEBUG 1
+#endif
+
 int generate_file(const char * path, unsigned int num_keys, unsigned int num_total, unsigned int max) {
     FILE * ptr = fopen(path, "w");
+    char str_buf[64];
 
     if(!ptr) {
         perror("generate_file could not generate a new file specified by char * path.");
@@ -16,20 +21,21 @@ int generate_file(const char * path, unsigned int num_keys, unsigned int num_tot
 
     unsigned int keys_left = num_keys;
     for(int i = 0; i < num_keys; i++) {
-        if(keys_left && rand_fp() < percentage) {
+        if(keys_left && (rand_fp() < percentage)) {
             // Here, we want to insert a hidden key into the file.
             keys_left--;
-            putw(-1, ptr);
+            sprintf(str_buf, "%d\n", -1);
         } else {
             // Here, we want to insert a pos normal number into the file.
             int num = rand_fp() * max;
-            putw(num, ptr);
+            sprintf(str_buf, "%d\n", num);
         }
+        fputs(str_buf, ptr);
     }
 
     // Any remaining keys, we just append.
     for(int i = keys_left; i >= 0; i--) {
-        putw(-1, ptr);
+        fputs("-1\n", ptr);
     }
 
     fclose(ptr);
