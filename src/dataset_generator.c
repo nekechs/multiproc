@@ -5,7 +5,7 @@
 #include "random.h"
 
 #ifndef DEBUG
-#define DEBUG 1
+#define DEBUG 0
 #endif
 
 int generate_file(const char * path, unsigned int num_keys, unsigned int num_total, unsigned int max) {
@@ -14,7 +14,8 @@ int generate_file(const char * path, unsigned int num_keys, unsigned int num_tot
 
     if(!ptr) {
         perror("generate_file could not generate a new file specified by char * path.");
-        exit(EXIT_FAILURE);
+        // exit(EXIT_FAILURE);
+        return -1;
     }
 
     const double percentage = ((double)num_keys) / num_total;
@@ -39,4 +40,5 @@ int generate_file(const char * path, unsigned int num_keys, unsigned int num_tot
     }
 
     fclose(ptr);
+    return 0;
 }
