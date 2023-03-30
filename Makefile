@@ -5,19 +5,15 @@ CFLAGS = -std=c99 -Wall -g -fsanitize=address,undefined -Iinclude -DDEBUG=1
 
 VPATH = src:../include include
 
-# CPPFLAGS = -DTEST
-
-# debug:
-# 	CPPFLAGS += -DDEBUG=1
-
 all: test
 
-test: dataset_generator.o random.o test.o
+test: dataset_generator.o random.o test.o arraylist.o
 	$(CC) $(CFLAGS) -lm $^ -o $@
 
-test.o: dataset_generator.h
+test.o: dataset_generator.h arraylist.h
 dataset_generator.o: random.h dataset_generator.h
 random.o: random.h
+arraylist.o: arraylist.h
 
 clean:
 	rm -rf *.o
