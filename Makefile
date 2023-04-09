@@ -19,4 +19,3 @@ arraylist.o: arraylist.h
 
 clean:
 	rm -rf *.o
-	rm test
