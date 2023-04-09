@@ -25,7 +25,7 @@ int generate_file(const char * path, unsigned int num_keys, unsigned int num_tot
     }
 
     unsigned int keys_left = num_keys;
-    for(int i = 0; i < num_total; i++) {
+    for(int i = 0; i < num_total - keys_left - 1; i++) {
         if(keys_left && (rand_fp() < percentage)) {
             // Here, we want to insert a hidden key into the file.
             keys_left--;
