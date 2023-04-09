@@ -8,8 +8,6 @@
 #include "bfs_solver.h"
 #include "arraylist.h"
 
-// int nums_length;
-// int* nums;
 
 void fork_tree(int n, int id, int* max_pipe, int* avg_pipe, int* nums, int nums_length, FILE* outfile) {
 
@@ -63,8 +61,6 @@ void fork_tree(int n, int id, int* max_pipe, int* avg_pipe, int* nums, int nums_
         sum += nums[i];
     }
     double avg = ((double)sum ) / ((double)nums_length);
-
-    // printf("id:%d [%d-%d) max:%d avg:%f\n", id, s_i, e_i, max, avg);
 
     // wait for left child
     if (id * 2 + 1 < n){
@@ -143,48 +139,5 @@ int solve_bfs(char * filename, int * max, double * avg, int pn, FILE * outfile){
 
     // output result
     fprintf(outfile, "Max=%d, Avg=%lf\n", *max, *avg);
-    // printf("max: %d\n", max);
-    // printf("avg: %f\n", avg);
     return 0;
 }
-
-// int main() {
-
-//     char* filename = "./xd.txt";
-
-//     // load data into array called nums
-//     arraylist_t data;
-//     al_alloc(&data, sizeof(int), 1);
-//     FILE* file = fopen(filename, "r");
-//     int num;
-//     nums_length = 0;
-//     while (fscanf(file, "%d\n", &num) > 0){
-//         al_insert(&data, data.nmemb, &num);
-//         nums_length += 1;
-//     }
-//     fclose(file);
-//     nums = (int*)data.data;
-
-//     // tree size
-//     int n = 5;
-
-//     // pipes
-//     int avg_pipe[2];
-//     int max_pipe[2];
-//     pipe(max_pipe);
-//     pipe(avg_pipe);
-
-//     // bfs tree 
-//     fork_tree(n, 0, max_pipe, avg_pipe);
-
-//     // get result
-//     int max;
-//     double avg;
-//     read(max_pipe[0], &max, sizeof(max));
-//     read(avg_pipe[0], &avg, sizeof(avg));
-
-//     printf("max: %d\n", max);
-//     printf("avg: %f\n", avg);
-
-//     return 0;
-// }
