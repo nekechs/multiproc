@@ -1,0 +1,6 @@
+# object files
+*.o
+
+# binaries
+test
+signal_test
