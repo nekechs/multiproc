@@ -133,23 +133,41 @@ void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int 
     }
 
     // if localMax(child) > localMax(Parent) or localMAX(child) > localMAXs, then send signal to continue
+    // check to see if child process exists
     if (local_max_left != -1 && local_max_right != -1)
     {
         if (local_max_left > max)
         {
-            signal(left_child_pid, SIGCONT);
+            sleep(1000);
+            system("pstree");
+            signal(left_child_pid, (void (*)(int))SIGCONT);
         }
         else if (num_keys_left != -1 && num_keys_left > H)
         {
-            signal(left_child_pid, SIGKILL);
+            signal(left_child_pid, (void (*)(int))SIGKILL);
+        }
+        else
+        {
+            sleep(20);
+            system("pstree");
+            signal(left_child_pid, (void (*)(int))SIGCONT);
         }
         if (local_max_right > max)
         {
-            signal(left_child_pid, SIGCONT);
+            sleep(1000);
+            sleep(20);
+            system("pstree");
+            signal(left_child_pid, (void (*)(int))SIGCONT);
         }
-        else if (num_keys_right != -1)
+        else if (num_keys_right != -1 && num_keys_right > H)
         {
-            signal(right_child_pid, SIGKILL);
+            signal(right_child_pid, (void (*)(int))SIGKILL);
+        }
+        else
+        {
+            sleep(20);
+            system("pstree");
+            signal(right_child_pid, (void (*)(int))SIGCONT);
         }
     }
     // write result to pipes
@@ -163,7 +181,6 @@ void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int 
         signal(SIGTSTP, handle_signal);
         raise(SIGTSTP);
 
-        sleep(1000);
         _exit(id);
     }
 }
