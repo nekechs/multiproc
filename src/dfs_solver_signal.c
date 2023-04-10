@@ -4,9 +4,9 @@
 #include <limits.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 #include "dfs_solver.h"
-#include "dfs_solver_signal.h"
 #include "arraylist.h"
 
 #ifndef DEBUG
@@ -25,7 +25,7 @@ struct dfs_chunk dfs_chunk_merge(const struct dfs_chunk * left, const struct dfs
     return result;
 }
 
-int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, FILE * outfile) {
+int solve_dfs(char * filename, int * max, double * avg, int num_proc, FILE * outfile) {
     /* First, we need to read all of the elements into an arraylist_t, and store the number of elements. */
     FILE * ptr = fopen(filename, "r");
     if(!ptr) {
@@ -43,7 +43,7 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, FIL
     char * s = buffer;
 
     s = fgets(buffer, BUF_SIZE, ptr);
-    while(s) {
+    while(s && *s != '\n') {
         int current = atoi(s);
         al_insert(&A, A.nmemb, &current);
         s = fgets(buffer, BUF_SIZE, ptr);
@@ -79,8 +79,8 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, FIL
     if(pn != 0) {
         /* If we are in a spawned process, we will compute the relevant metrics for this chunk */
         int pipe_num = pn - 1;
-        int lower = (pn * A.nmemb) / num_proc;
-        int upper = ( (pn+1) * A.nmemb) / num_proc;
+        int lower = (pipe_num * A.nmemb) / num_proc;
+        int upper = ( (pipe_num+1) * A.nmemb) / num_proc;
 
         int max = INT_MIN;
         long int sum = 0;
@@ -90,6 +90,7 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, FIL
         for(int i = lower; i < upper; i++) {
             int num;
             al_get(&A, i, &num);
+            // printf("%d\n", num);
 
             if(num > max) max = num;
             if(num == -1) {
@@ -138,7 +139,7 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, FIL
         fprintf(outfile, "Max=%d, Avg=%lf\n", final_ans.max, final_ans.mean);
         return final_ans.num_key;
     }
-    
-    // raise (SIGTSTP);
+
+    raise(SIGTSTP);
     exit(pn);
 }
