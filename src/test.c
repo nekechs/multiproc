@@ -20,7 +20,7 @@ int main() {
     int bfs_max;
 
     FILE * bfs_outfile = fopen("./bfs_output.txt", "w");
-    solve_dfs("./xd.txt", &bfs_max, &bfs_mean, 11, bfs_outfile);
+    solve_bfs("./xd.txt", &bfs_max, &bfs_mean, 11, bfs_outfile);
 
     // printf("%d, %lf\n", dfs_max, dfs_mean);
 

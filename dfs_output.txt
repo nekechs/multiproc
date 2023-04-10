@@ -1,34 +1,14 @@
-Hi, I am process 2734053 with return arg 9, and my parent is 2734052.
-Hi, I am process 2734053 with return arg 9. I found the hidden key in position A[9]
-Hi, I am process 2734052 with return arg 8, and my parent is 2734051.
-Hi, I am process 2734052 with return arg 8. I found the hidden key in position A[8]
-Hi, I am process 2734051 with return arg 7, and my parent is 2734050.
-Hi, I am process 2734051 with return arg 7. I found the hidden key in position A[7]
-Hi, I am process 2734050 with return arg 6, and my parent is 2734049.
-Hi, I am process 2734049 with return arg 5, and my parent is 2734048.
-Hi, I am process 2734048 with return arg 4, and my parent is 2734047.
-Hi, I am process 2734047 with return arg 3, and my parent is 2734046.
-Hi, I am process 2734046 with return arg 2, and my parent is 2734045.
-Hi, I am process 2734045 with return arg 1, and my parent is 2734044.
-Hi, I am process 2734044 with return arg 0, and my parent is 2729924.
-Max=319, Avg=153.600000
-Hi, I am process 2734044 with return arg 0, and my parent is 2729924.
-Max=319, Avg=153.600000
-Hi, I am process 2734044 with return arg 0, and my parent is 2729924.
-Max=319, Avg=153.600000
-Hi, I am process 2734044 with return arg 0, and my parent is 2729924.
-Max=319, Avg=153.600000
-Hi, I am process 2734044 with return arg 0, and my parent is 2729924.
-Max=319, Avg=153.600000
-Hi, I am process 2734044 with return arg 0, and my parent is 2729924.
-Max=319, Avg=153.600000
-Hi, I am process 2734044 with return arg 0, and my parent is 2729924.
-Max=319, Avg=153.600000
-Hi, I am process 2734044 with return arg 0, and my parent is 2729924.
-Max=319, Avg=153.600000
-Hi, I am process 2734044 with return arg 0, and my parent is 2729924.
-Max=319, Avg=153.600000
-Hi, I am process 2734044 with return arg 0, and my parent is 2729924.
-Max=319, Avg=153.600000
-Hi, I am process 2734044 with return arg 0, and my parent is 2729924.
+Hi, I am process 3833084 with return arg 9, and my parent is 3833083.
+Hi, I am process 3833084 with return arg 9. I found the hidden key in position A[9]
+Hi, I am process 3833083 with return arg 8, and my parent is 3833082.
+Hi, I am process 3833083 with return arg 8. I found the hidden key in position A[8]
+Hi, I am process 3833082 with return arg 7, and my parent is 3833081.
+Hi, I am process 3833082 with return arg 7. I found the hidden key in position A[7]
+Hi, I am process 3833081 with return arg 6, and my parent is 3833080.
+Hi, I am process 3833080 with return arg 5, and my parent is 3833079.
+Hi, I am process 3833079 with return arg 4, and my parent is 3833078.
+Hi, I am process 3833078 with return arg 3, and my parent is 3833077.
+Hi, I am process 3833077 with return arg 2, and my parent is 3833076.
+Hi, I am process 3833076 with return arg 1, and my parent is 3833075.
+Hi, I am process 3833075 with return arg 0, and my parent is 3798916.
 Max=319, Avg=153.600000

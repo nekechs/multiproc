@@ -13,6 +13,7 @@ void fork_tree(int n, int id, int* max_pipe, int* avg_pipe, int* nums, int nums_
 
     // printf("Process with ID %d created\n", id);
     fprintf(outfile, "Hi, I am process %d with return arg %d, and my parent is %d.\n", getpid(), id, getppid());
+    fflush(outfile);
 
     // fork left child
     int max_pipe_l[2];
@@ -41,8 +42,8 @@ void fork_tree(int n, int id, int* max_pipe, int* avg_pipe, int* nums, int nums_
     }
 
     // get max, avg, and keys!
-    int s_i = (nums_length/n)*id; 
-    int e_i = (nums_length/n)*(id+1);
+    int s_i = (id*nums_length)/n;
+    int e_i = ((id+1)*nums_length)/n;
 
     int max = INT_MIN;
     int sum = 0;
@@ -51,7 +52,8 @@ void fork_tree(int n, int id, int* max_pipe, int* avg_pipe, int* nums, int nums_
     {    
         if (nums[i] == -1){
             num_keys += 1;
-            fprintf(outfile, "Hi, I am process %d with return arg %d. I found the hidden key in position A[%d]\n", getpid(), n, i);
+            fprintf(outfile, "Hi, I am process %d with return arg %d. I found the hidden key in position A[%d]\n", getpid(), id, i);
+            fflush(outfile);
         }
 
         if (nums[i] > max)
@@ -134,10 +136,15 @@ int solve_bfs(char * filename, int * max, double * avg, int pn, FILE * outfile){
     fork_tree(pn, 0, max_pipe, avg_pipe, nums, nums_length, outfile);
 
     // get result
-    read(max_pipe[0], &max, sizeof(*max));
-    read(avg_pipe[0], &avg, sizeof(*avg));
+    read(max_pipe[0], max, sizeof(*max));
+    read(avg_pipe[0], avg, sizeof(*avg));
 
     // output result
     fprintf(outfile, "Max=%d, Avg=%lf\n", *max, *avg);
+    fflush(outfile);
+
+    // free array
+    al_free(&data);
+
     return 0;
 }
