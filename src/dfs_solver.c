@@ -67,14 +67,17 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, FILE * out
         pid_t pid = fork();
         if(pid > 0) {
             fprintf(outfile, "Hi, I am process %d with return arg %d, and my parent is %d.\n", getpid(), pn, getppid());
-            wait(NULL);
+            // wait(NULL);
             break;
         } else if(pid < 0) {
             // BIG ERROR
             // TODO: FINISH
         }
+    }
 
-        /* We are in a newly created child */
+    if(pn != 0) {
+        /* If we are in a spawned process, we will compute the relevant metrics for this chunk */
+        int pipe_num = pn - 1;
         int lower = (pn * A.nmemb) / num_proc;
         int upper = ( (pn+1) * A.nmemb) / num_proc;
 
@@ -100,18 +103,16 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, FILE * out
         answer.max = max;
         answer.mean = ((double)sum) / answer.nmemb;
         answer.num_key = num_key;
-        int bytes_written = write(*(fd_list + 2*pn + 1), &answer, sizeof(struct dfs_chunk));
+        int bytes_written = write(*(fd_list + 2*pipe_num + 1), &answer, sizeof(struct dfs_chunk));
+    } else if (pn != num_proc) {
+        wait(NULL);
     }
-    // write(fd[1], &answer, sizeof(struct dfs_chunk));
-    /* Now the process needs to do actual work. */
-
     
-    /* Now, we compute the avg. and max for this chunk. */
-    // printf("%d\n", pn);
     al_free(&A);
 
     struct dfs_chunk final_ans;
     if(pn == 0) {
+        /* In the root level process --- Pick up all of the metrics from the children */
         struct dfs_chunk acc = {
             .nmemb = 0,
             .mean = 0,
