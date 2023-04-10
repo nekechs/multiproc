@@ -97,10 +97,10 @@ void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int 
         read(avg_pipe_l[0], &avg_l, sizeof(avg_l));
         read(keys_pipe_l[0], &keys_l, sizeof(keys_l));
 
+        local_max_left = max_l;
         if (max_l > max)
         {
             max = max_l;
-            local_max_left = max_l;
         }
 
         avg += avg_l;
@@ -121,10 +121,10 @@ void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int 
         read(avg_pipe_r[0], &avg_r, sizeof(avg_r));
         read(keys_pipe_r[0], &keys_r, sizeof(keys_r));
 
+        local_max_right = max_r;
         if (max_r > max)
         {
             max = max_r;
-            local_max_right = max_r;
         }
 
         avg += avg_r;
@@ -133,8 +133,8 @@ void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int 
     }
 
     // if localMax(child) > localMax(Parent) or localMAX(child) > localMAXs, then send signal to continue
-    // check to see if child process exists
-    if (local_max_left != -1 && local_max_right != -1)
+    // check to see if child process exists and not parent process
+    if (local_max_left != -1 && local_max_right != -1 && left_child_pid != 0 && right_child_pid != 0)
     {
         if (local_max_left > max)
         {
@@ -178,7 +178,7 @@ void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int 
     if (id != 0)
     {
         // pause child process
-        signal(SIGTSTP, handle_signal);
+        // signal(SIGTSTP, handle_signal);
         raise(SIGTSTP);
 
         _exit(id);
