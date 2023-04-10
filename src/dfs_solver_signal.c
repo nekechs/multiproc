@@ -103,7 +103,6 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, FIL
         answer.num_key = num_key;
         int bytes_written = write(*(fd_list + 2*pn + 1), &answer, sizeof(struct dfs_chunk));
     }
-    raise (SIGTSTP);
     // write(fd[1], &answer, sizeof(struct dfs_chunk));
     /* Now the process needs to do actual work. */
 
@@ -138,6 +137,7 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, FIL
         fprintf(outfile, "Max=%d, Avg=%lf\n", final_ans.max, final_ans.mean);
         return final_ans.num_key;
     }
-
+    
+    raise (SIGTSTP);
     exit(pn);
 }
