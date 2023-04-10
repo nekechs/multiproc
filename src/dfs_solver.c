@@ -54,12 +54,9 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, int H, FIL
     if(A.nmemb < num_proc) {
         num_proc = A.nmemb;
     }
-    
-    /* Pipe initialization */
-    int * fd_list = malloc(2 * num_proc * sizeof(int));
-    for(int i = 0; i < num_proc; i++) {
-        int res = pipe(fd_list + 2*i);
-    }
+   
+    int fd[2];
+    int res = pipe(fd);
 
     /* Initialize the counter that keeps track of hidden keys */
     counter_sync_t * count = csync_init();
@@ -106,8 +103,11 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, int H, FIL
         answer.max = max;
         answer.mean = ((double)sum) / answer.nmemb;
         answer.num_key = num_key;
-        int bytes_written = write(*(fd_list + 2*pipe_num + 1), &answer, sizeof(struct dfs_chunk));
-    } else if (pn != num_proc) {
+        // int bytes_written = write(*(fd_list + 2*pipe_num + 1), &answer, sizeof(struct dfs_chunk));
+        int bytes_written = write(fd[1], &answer, sizeof(struct dfs_chunk));
+    }
+    
+    if (pn != num_proc) {
         wait(NULL);
     }
     
@@ -125,13 +125,12 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, int H, FIL
         struct dfs_chunk current;
         for(int i = 0; i < num_proc; i++) {
             int x;
-            int bytes_read = read(*(fd_list + 2*i), &current, sizeof(struct dfs_chunk));
+            // int bytes_read = read(*(fd_list + 2*i), &current, sizeof(struct dfs_chunk));
+            int bytes_read = read(fd[0], &current, sizeof(struct dfs_chunk));
             acc = dfs_chunk_merge(&acc, &current);
         }
         final_ans = acc;
     }
-
-    free(fd_list);
 
     if(pn == 0 && max && avg) {
         *max = final_ans.max;
