@@ -139,6 +139,6 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, FIL
         return final_ans.num_key;
     }
     
-    raise (SIGTSTP);
+    // raise (SIGTSTP);
     exit(pn);
 }

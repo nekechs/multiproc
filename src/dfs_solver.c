@@ -7,6 +7,7 @@
 
 #include "dfs_solver.h"
 #include "arraylist.h"
+#include "memshare.h"
 
 #ifndef DEBUG
 #define DEBUG 1
@@ -24,7 +25,7 @@ struct dfs_chunk dfs_chunk_merge(const struct dfs_chunk * left, const struct dfs
     return result;
 }
 
-int solve_dfs(char * filename, int * max, double * avg, int num_proc, FILE * outfile) {
+int solve_dfs(char * filename, int * max, double * avg, int num_proc, int H, FILE * outfile) {
     /* First, we need to read all of the elements into an arraylist_t, and store the number of elements. */
     FILE * ptr = fopen(filename, "r");
     if(!ptr) {
@@ -60,7 +61,8 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, FILE * out
         int res = pipe(fd_list + 2*i);
     }
 
-    
+    /* Initialize the counter that keeps track of hidden keys */
+    counter_sync_t * count = csync_init();
 
     int pn;
     for(pn = 0; pn < num_proc; pn++) {
@@ -89,12 +91,12 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, FILE * out
         for(int i = lower; i < upper; i++) {
             int num;
             al_get(&A, i, &num);
-            // printf("%d\n", num);
 
             if(num > max) max = num;
-            if(num == -1) {
+            if(num == -1 && csync_view(count) < H) {
                 num_key++;
                 fprintf(outfile, "Hi, I am process %d with return arg %d. I found the hidden key in position A[%d]\n", getpid(), pn, i);
+                csync_increment(count);
             }
             sum += num;
         }

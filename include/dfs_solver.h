@@ -10,6 +10,6 @@ struct dfs_chunk {
 
 struct dfs_chunk dfs_chunk_merge(const struct dfs_chunk * left, const struct dfs_chunk * right);
 
-int solve_dfs(char * filename, int * max, double * avg, int pn, FILE * outfile);
+int solve_dfs(char * filename, int * max, double * avg, int pn, int H, FILE * outfile);
 
 #endif

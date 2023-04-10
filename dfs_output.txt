@@ -1,81 +1,21 @@
-Hi, I am process 230667 with return arg 2, and my parent is 230666.
-Hi, I am process 230667 with return arg 2. I found the hidden key in position A[8062]
-Hi, I am process 230669 with return arg 3, and my parent is 230667.
-Hi, I am process 230669 with return arg 3. I found the hidden key in position A[10642]
-Hi, I am process 230669 with return arg 3. I found the hidden key in position A[10698]
-Hi, I am process 230669 with return arg 3. I found the hidden key in position A[10855]
-Hi, I am process 230669 with return arg 3. I found the hidden key in position A[11803]
-Hi, I am process 230666 with return arg 1, and my parent is 230665.
-Hi, I am process 230666 with return arg 1. I found the hidden key in position A[3720]
-Hi, I am process 230671 with return arg 4, and my parent is 230669.
-Hi, I am process 230671 with return arg 4. I found the hidden key in position A[13586]
-Hi, I am process 230671 with return arg 4. I found the hidden key in position A[14865]
-Hi, I am process 230673 with return arg 5, and my parent is 230671.
-Hi, I am process 230673 with return arg 5. I found the hidden key in position A[17777]
-Hi, I am process 230673 with return arg 5. I found the hidden key in position A[17977]
-Hi, I am process 230673 with return arg 5. I found the hidden key in position A[18353]
-Hi, I am process 230677 with return arg 7, and my parent is 230675.
-Hi, I am process 230677 with return arg 7. I found the hidden key in position A[23937]
-Hi, I am process 230675 with return arg 6, and my parent is 230673.
-Hi, I am process 230675 with return arg 6. I found the hidden key in position A[21159]
-Hi, I am process 230679 with return arg 8, and my parent is 230677.
-Hi, I am process 230679 with return arg 8. I found the hidden key in position A[27453]
-Hi, I am process 230679 with return arg 8. I found the hidden key in position A[27943]
-Hi, I am process 230683 with return arg 10, and my parent is 230681.
-Hi, I am process 230683 with return arg 10. I found the hidden key in position A[34643]
-Hi, I am process 230683 with return arg 10. I found the hidden key in position A[36629]
-Hi, I am process 230689 with return arg 13, and my parent is 230687.
-Hi, I am process 230689 with return arg 13. I found the hidden key in position A[46338]
-Hi, I am process 230681 with return arg 9, and my parent is 230679.
-Hi, I am process 230681 with return arg 9. I found the hidden key in position A[31014]
-Hi, I am process 230681 with return arg 9. I found the hidden key in position A[33021]
-Hi, I am process 230687 with return arg 12, and my parent is 230685.
-Hi, I am process 230687 with return arg 12. I found the hidden key in position A[41835]
-Hi, I am process 230685 with return arg 11, and my parent is 230683.
-Hi, I am process 230691 with return arg 14, and my parent is 230689.
-Hi, I am process 230691 with return arg 14. I found the hidden key in position A[49812]
-Hi, I am process 230695 with return arg 16, and my parent is 230693.
-Hi, I am process 230695 with return arg 16. I found the hidden key in position A[53345]
-Hi, I am process 230695 with return arg 16. I found the hidden key in position A[53401]
-Hi, I am process 230695 with return arg 16. I found the hidden key in position A[54761]
-Hi, I am process 230695 with return arg 16. I found the hidden key in position A[55165]
-Hi, I am process 230693 with return arg 15, and my parent is 230691.
-Hi, I am process 230693 with return arg 15. I found the hidden key in position A[50818]
-Hi, I am process 230693 with return arg 15. I found the hidden key in position A[52994]
-Hi, I am process 230693 with return arg 15. I found the hidden key in position A[53100]
-Hi, I am process 230697 with return arg 17, and my parent is 230695.
-Hi, I am process 230697 with return arg 17. I found the hidden key in position A[56901]
-Hi, I am process 230697 with return arg 17. I found the hidden key in position A[59016]
-Hi, I am process 230701 with return arg 19, and my parent is 230699.
-Hi, I am process 230703 with return arg 20, and my parent is 230701.
-Hi, I am process 230703 with return arg 20. I found the hidden key in position A[68210]
-Hi, I am process 230703 with return arg 20. I found the hidden key in position A[68479]
-Hi, I am process 230705 with return arg 21, and my parent is 230703.
-Hi, I am process 230705 with return arg 21. I found the hidden key in position A[72361]
-Hi, I am process 230699 with return arg 18, and my parent is 230697.
-Hi, I am process 230699 with return arg 18. I found the hidden key in position A[60881]
-Hi, I am process 230699 with return arg 18. I found the hidden key in position A[63301]
-Hi, I am process 230707 with return arg 22, and my parent is 230705.
-Hi, I am process 230707 with return arg 22. I found the hidden key in position A[73354]
-Hi, I am process 230711 with return arg 24, and my parent is 230709.
-Hi, I am process 230711 with return arg 24. I found the hidden key in position A[80218]
-Hi, I am process 230711 with return arg 24. I found the hidden key in position A[80769]
-Hi, I am process 230711 with return arg 24. I found the hidden key in position A[82296]
-Hi, I am process 230711 with return arg 24. I found the hidden key in position A[82309]
-Hi, I am process 230716 with return arg 27, and my parent is 230715.
-Hi, I am process 230709 with return arg 23, and my parent is 230707.
-Hi, I am process 230709 with return arg 23. I found the hidden key in position A[79224]
-Hi, I am process 230709 with return arg 23. I found the hidden key in position A[79508]
-Hi, I am process 230715 with return arg 26, and my parent is 230713.
-Hi, I am process 230715 with return arg 26. I found the hidden key in position A[86701]
-Hi, I am process 230715 with return arg 26. I found the hidden key in position A[89787]
-Hi, I am process 230719 with return arg 28, and my parent is 230716.
-Hi, I am process 230713 with return arg 25, and my parent is 230711.
-Hi, I am process 230713 with return arg 25. I found the hidden key in position A[83573]
-Hi, I am process 230713 with return arg 25. I found the hidden key in position A[83667]
-Hi, I am process 230713 with return arg 25. I found the hidden key in position A[84306]
-Hi, I am process 230713 with return arg 25. I found the hidden key in position A[86189]
-Hi, I am process 230665 with return arg 0, and my parent is 142015.
-Max=399, Avg=192.643290
-Hi, I am process 230721 with return arg 29, and my parent is 230719.
-Hi, I am process 230721 with return arg 29. I found the hidden key in position A[99999]
+Hi, I am process 294612 with return arg 1, and my parent is 294611.
+Hi, I am process 294612 with return arg 1. I found the hidden key in position A[86]
+Hi, I am process 294612 with return arg 1. I found the hidden key in position A[118]
+Hi, I am process 294612 with return arg 1. I found the hidden key in position A[243]
+Hi, I am process 294612 with return arg 1. I found the hidden key in position A[544]
+Hi, I am process 294612 with return arg 1. I found the hidden key in position A[637]
+Hi, I am process 294612 with return arg 1. I found the hidden key in position A[687]
+Hi, I am process 294612 with return arg 1. I found the hidden key in position A[890]
+Hi, I am process 294619 with return arg 5, and my parent is 294617.
+Hi, I am process 294617 with return arg 4, and my parent is 294615.
+Hi, I am process 294613 with return arg 2, and my parent is 294612.
+Hi, I am process 294613 with return arg 2. I found the hidden key in position A[1096]
+Hi, I am process 294613 with return arg 2. I found the hidden key in position A[1178]
+Hi, I am process 294613 with return arg 2. I found the hidden key in position A[1419]
+Hi, I am process 294615 with return arg 3, and my parent is 294613.
+Hi, I am process 294623 with return arg 7, and my parent is 294621.
+Hi, I am process 294625 with return arg 8, and my parent is 294623.
+Hi, I am process 294621 with return arg 6, and my parent is 294619.
+Hi, I am process 294627 with return arg 9, and my parent is 294625.
+Hi, I am process 294611 with return arg 0, and my parent is 142015.
+Max=399, Avg=196.862500

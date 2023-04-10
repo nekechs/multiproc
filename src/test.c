@@ -13,7 +13,7 @@ int main() {
     int dfs_max;
 
     FILE * dfs_outfile = fopen("./dfs_output.txt", "w");
-    solve_dfs("./xd.txt", &dfs_max, &dfs_mean, 30, dfs_outfile);
+    solve_dfs("./xd.txt", &dfs_max, &dfs_mean, 10, 10, dfs_outfile);
 
     // bfs
     double bfs_mean;
