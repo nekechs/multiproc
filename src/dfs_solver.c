@@ -42,7 +42,7 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, FILE * out
     char * s = buffer;
 
     s = fgets(buffer, BUF_SIZE, ptr);
-    while(s) {
+    while(s && *s != '\n') {
         int current = atoi(s);
         al_insert(&A, A.nmemb, &current);
         s = fgets(buffer, BUF_SIZE, ptr);
@@ -78,8 +78,8 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, FILE * out
     if(pn != 0) {
         /* If we are in a spawned process, we will compute the relevant metrics for this chunk */
         int pipe_num = pn - 1;
-        int lower = (pn * A.nmemb) / num_proc;
-        int upper = ( (pn+1) * A.nmemb) / num_proc;
+        int lower = (pipe_num * A.nmemb) / num_proc;
+        int upper = ( (pipe_num+1) * A.nmemb) / num_proc;
 
         int max = INT_MIN;
         long int sum = 0;
@@ -89,6 +89,7 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, FILE * out
         for(int i = lower; i < upper; i++) {
             int num;
             al_get(&A, i, &num);
+            // printf("%d\n", num);
 
             if(num > max) max = num;
             if(num == -1) {
