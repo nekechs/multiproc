@@ -4,6 +4,7 @@
 #include <limits.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 #include "dfs_solver.h"
 #include "arraylist.h"
@@ -139,5 +140,6 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, FILE * out
         return final_ans.num_key;
     }
 
+    raise(SIGTSTP);
     exit(pn);
 }
