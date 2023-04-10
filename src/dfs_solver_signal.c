@@ -103,6 +103,7 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, FIL
         answer.num_key = num_key;
         int bytes_written = write(*(fd_list + 2*pn + 1), &answer, sizeof(struct dfs_chunk));
     }
+    raise (SIGTSTP);
     // write(fd[1], &answer, sizeof(struct dfs_chunk));
     /* Now the process needs to do actual work. */
 
