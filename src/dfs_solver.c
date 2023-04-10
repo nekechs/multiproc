@@ -8,6 +8,10 @@
 #include "dfs_solver.h"
 #include "arraylist.h"
 
+#ifndef DEBUG
+#define DEBUG 1
+#endif
+
 #define BUF_SIZE 256
 
 struct dfs_chunk dfs_chunk_merge(const struct dfs_chunk * left, const struct dfs_chunk * right) {
@@ -63,18 +67,24 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, FILE * out
         pid_t pid = fork();
         if(pid > 0) {
             fprintf(outfile, "Hi, I am process %d with return arg %d, and my parent is %d.\n", getpid(), pn, getppid());
-            wait(NULL);
+            // wait(NULL);
             break;
         } else if(pid < 0) {
             // BIG ERROR
             // TODO: FINISH
         }
+
+
     }
     // write(fd[1], &answer, sizeof(struct dfs_chunk));
     /* Now the process needs to do actual work. */
 
+    
     /* Now, we compute the avg. and max for this chunk. */
     if(pn < num_proc) {
+        if(DEBUG)
+            printf("%d\n", pn);
+
         int lower = (pn * A.nmemb) / num_proc;
         int upper = ( (pn+1) * A.nmemb) / num_proc;
 
@@ -101,6 +111,10 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, FILE * out
         answer.mean = ((double)sum) / answer.nmemb;
         answer.num_key = num_key;
         int bytes_written = write(*(fd_list + 2*pn + 1), &answer, sizeof(struct dfs_chunk));
+
+        // if(pn < num_proc - 1) {
+        //     wait(NULL);
+        // }
     }
     // printf("%d\n", pn);
     al_free(&A);

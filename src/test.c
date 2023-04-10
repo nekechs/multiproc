@@ -6,14 +6,17 @@
 
 int main() {
     // generate data
-    generate_file("./xd.txt", 2, 10, 400);
+    generate_file("./xd.txt", 50, 10000, 400);
     
     // dfs
     double dfs_mean;
     int dfs_max;
 
     FILE * dfs_outfile = fopen("./dfs_output.txt", "w");
-    solve_dfs("./xd.txt", &dfs_max, &dfs_mean, 11, dfs_outfile);
+    printf("start\n");
+    solve_dfs("./xd.txt", &dfs_max, &dfs_mean, 30, dfs_outfile);
+    printf("done\n");
+    // solve_dfs("./xd.txt", &dfs_max, &dfs_mean, 11, stdout);
 
     // bfs
     double bfs_mean;
