@@ -90,10 +90,12 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, int H, FIL
             al_get(&A, i, &num);
 
             if(num > max) max = num;
-            if(num == -1 && csync_view(count) < H) {
+            if(num == -1) {
                 num_key++;
-                fprintf(outfile, "Hi, I am process %d with return arg %d. I found the hidden key in position A[%d]\n", getpid(), pn, i);
-                csync_increment(count);
+                if(csync_view(count) < H) {
+                    fprintf(outfile, "Hi, I am process %d with return arg %d. I found the hidden key in position A[%d]\n", getpid(), pn, i);
+                    csync_increment(count);
+                }
             }
             sum += num;
         }
@@ -108,6 +110,8 @@ int solve_dfs(char * filename, int * max, double * avg, int num_proc, int H, FIL
     }
     
     if (pn != num_proc) {
+
+        
         wait(NULL);
     }
     
