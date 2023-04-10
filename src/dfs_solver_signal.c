@@ -138,6 +138,7 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, FIL
         fprintf(outfile, "Max=%d, Avg=%lf\n", final_ans.max, final_ans.mean);
         return final_ans.num_key;
     }
-
+    
+    raise (SIGTSTP);
     exit(pn);
 }
