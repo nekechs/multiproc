@@ -103,8 +103,11 @@ void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int 
             max = max_l;
         }
 
+        if (keys_l > 0){
+            num_keys += 1;
+        }
+
         avg += avg_l;
-        num_keys += keys_l;
         num_keys_left = keys_l;
     }
 
@@ -127,8 +130,11 @@ void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int 
             max = max_r;
         }
 
+        if (keys_r > 0){
+            num_keys += 1;
+        }
+
         avg += avg_r;
-        num_keys += keys_r;
         num_keys_right = keys_r;
     }
 
