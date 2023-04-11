@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "dataset_generator.h"
+#include "arraylist.h"
 #include "dfs_solver_signal.h"
 
 int main(int argc, char ** argv) {
@@ -10,10 +12,9 @@ int main(int argc, char ** argv) {
     double dfs_mean;
     int dfs_max;
 
-    FILE * dfs_outfile = fopen("./dfs_output.txt", "w");
+    FILE * dfs_outfile = fopen("./dfs_signal_output.txt", "w");
     printf("start\n");
     solve_dfs_signal("./xd.txt", &dfs_max, &dfs_mean, 3, 10,dfs_outfile);
     printf("end\n");
-
-    return EXIT_SUCCESS;
+    
 }
