@@ -5,7 +5,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
-#include "ArrayList.h"
 
 #include "dfs_solver.h"
 #include "dfs_solver_signal.h"
@@ -28,7 +27,7 @@ struct dfs_chunk dfs_chunk_merge(const struct dfs_chunk * left, const struct dfs
     return result;
 }
 
-int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int H, FILE * outfile, ArrayList* list) {
+int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int H, FILE * outfile) {
     /* First, we need to read all of the elements into an arraylist_t, and store the number of elements. */
     FILE * ptr = fopen(filename, "r");
     if(!ptr) {
@@ -58,29 +57,24 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int
         num_proc = A.nmemb;
     }
    
-    int fd[2];
-    int res = pipe(fd);
+    int chunk_fd[2];
+    int res = pipe(chunk_fd);
 
     /* Initialize the counter that keeps track of hidden keys */
     counter_sync_t * count = csync_init();
-    HashMap* values = createHashMap();
+
+    pid_t child_pid = 0;
+    int parent_child_fd[2];
     
     int pn;
     for(pn = 0; pn < num_proc; pn++) {
-        
+        int pc_res = pipe(parent_child_fd);
         pid_t pid = fork();
         //node val
 
-        int* nodeVal = malloc(sizeof(int));
-        *nodeVal = node->value;
-        put(values, "value", nodeVal);
-
         if(pid > 0) {
             //child val
-            int* chVal = malloc(sizeof(int));
-            *chVal = node->left->value;
-            put(values, "leftChild", chVal);
-
+            child_pid = pid;
             fprintf(outfile, "Hi, I am process %d with return arg %d, and my parent is %d.\n", getpid(), pn, getppid());
             // wait(NULL);
             break;
@@ -90,11 +84,11 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int
         }
     }
 
+    arraylist_t key_index_list;
+    al_alloc(&key_index_list, sizeof(int), (H + 1) / 2);
+
     if(pn != 0) {
         /* If we are in a spawned process, we will compute the relevant metrics for this chunk */
-        int* pvalue = malloc(sizeof(int));
-        *pvalue = parent->value;
-        put(values, "parent", pvalue);
 
         int pipe_num = pn - 1;
         int lower = (pipe_num * A.nmemb) / num_proc;
@@ -112,6 +106,10 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int
             if(num > max) max = num;
             if(num == -1) {
                 num_key++;
+                
+                /* because this is the SIGNAL variant, we need to store all of the hidden keys so that we potentially */
+                al_insert(&key_index_list, key_index_list.nmemb, &i);
+
                 if(csync_view(count) < H) {
                     fprintf(outfile, "Hi, I am process %d with return arg %d. I found the hidden key in position A[%d]\n", getpid(), pn, i);
                     csync_increment(count);
@@ -120,24 +118,25 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int
             sum += num;
         }
 
-        append (list, values);
-        ArrayList* list = createArrayList();
-
         struct dfs_chunk answer;
         answer.nmemb = upper - lower;
         answer.max = max;
         answer.mean = ((double)sum) / answer.nmemb;
         answer.num_key = num_key;
         // int bytes_written = write(*(fd_list + 2*pipe_num + 1), &answer, sizeof(struct dfs_chunk));
-        int bytes_written = write(fd[1], &answer, sizeof(struct dfs_chunk));
+        int bytes_written = write(chunk_fd[1], &answer, sizeof(struct dfs_chunk));
     }
     
     if (pn != num_proc) {
 
-        
+        // signal(child_pid, SIGCONT);
+        sleep(2);
+        printf("Sending cont signal to %d\n", child_pid);
+        signal(child_pid, (void (*)(int))SIGCONT);
         wait(NULL);
     }
     
+    al_free(&key_index_list);
     al_free(&A);
 
     struct dfs_chunk final_ans;
@@ -153,7 +152,7 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int
         for(int i = 0; i < num_proc; i++) {
             int x;
             // int bytes_read = read(*(fd_list + 2*i), &current, sizeof(struct dfs_chunk));
-            int bytes_read = read(fd[0], &current, sizeof(struct dfs_chunk));
+            int bytes_read = read(chunk_fd[0], &current, sizeof(struct dfs_chunk));
             acc = dfs_chunk_merge(&acc, &current);
         }
         final_ans = acc;
@@ -167,6 +166,10 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int
         return final_ans.num_key;
     }
 
-    raise(SIGTSTP);
+    if(pn) {
+        printf("Child has called SIGTSTP from pid %d\n", getpid());
+        raise(SIGTSTP);
+    }
+    printf("bruh\n");
     exit(pn);
 }

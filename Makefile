@@ -9,10 +9,10 @@ all: test signal_test memtest
 
 # link all of the object files
 test: dataset_generator.o random.o test.o arraylist.o dfs_solver.o bfs_solver.o memshare.o
-	$(CC) $(CFLAGS) -lm $^ -o $@
+	$(CC) $(CFLAGS) -lm -lpthread $^ -o $@
 
-signal_test: dataset_generator.o random.o signal_test.o arraylist.o dfs_solver_signal.o
-	$(CC) $(CFLAGS) -lm $^ -o $@
+signal_test: dataset_generator.o random.o signal_test.o arraylist.o dfs_solver_signal.o memshare.o
+	$(CC) $(CFLAGS) -lm -lpthread $^ -o $@
 
 memtest: memtest.o memshare.o
 	$(CC) $(CFLAGS) -lpthread $^ -o $@

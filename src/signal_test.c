@@ -12,7 +12,7 @@ int main(int argc, char ** argv) {
 
     FILE * dfs_outfile = fopen("./dfs_output.txt", "w");
     printf("start\n");
-    solve_dfs_signal("./xd.txt", &dfs_max, &dfs_mean, 30, dfs_outfile);
+    solve_dfs_signal("./xd.txt", &dfs_max, &dfs_mean, 3, 10,dfs_outfile);
     printf("end\n");
 
     return EXIT_SUCCESS;
