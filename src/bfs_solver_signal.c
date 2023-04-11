@@ -4,15 +4,17 @@
 #include <limits.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <stdbool.h>
 
-#include "bfs_solver_signals.h"
+#include "bfs_solver_signal.h"
 #include "arraylist.h"
 #include <signal.h>
 
-void handle_signal(int signum)
+void handle_SIGCONT(int signum)
 {
-    // do nothing, just return from signal handler
-    printf("Received signal %d\n", signum);
+    // handle SIGCONT the same in all cases for now
+    system("pstree");
+    sleep(100);
 }
 
 void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int *nums, int nums_length, int H, FILE *outfile)
@@ -22,12 +24,23 @@ void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int 
     fprintf(outfile, "Hi, I am process %d with return arg %d, and my parent is %d.\n", getpid(), id, getppid());
     fflush(outfile);
 
+    // what the child's ids should be (if they will be created)
+    int left_child_id  = id * 2 + 1;
+    int right_child_id = id * 2 + 2;
+
+    // check if the left/right child should be created (also can be used to see if the child exists)
+    bool left_child  = (left_child_id  < n);
+    bool right_child = (right_child_id < n);
+
+    // set up signal handler for 
+    signal(SIGCONT, handle_SIGCONT);
+
     // fork left child
     int max_pipe_l[2];
     int avg_pipe_l[2];
     int keys_pipe_l[2];
     pid_t left_child_pid;
-    if (id * 2 + 1 < n)
+    if (left_child)
     {
         pipe(max_pipe_l);
         pipe(avg_pipe_l);
@@ -46,7 +59,7 @@ void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int 
     int avg_pipe_r[2];
     int keys_pipe_r[2];
     pid_t right_child_pid;
-    if (id * 2 + 2 < n)
+    if (right_child)
     {
         pipe(max_pipe_r);
         pipe(avg_pipe_r);
@@ -66,12 +79,12 @@ void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int 
 
     int max = INT_MIN;
     int sum = 0;
-    int num_keys = 0;
+    int keys = 0;
     for (int i = s_i; i < e_i; i++)
     {
         if (nums[i] == -1)
         {
-            num_keys += 1;
+            keys += 1;
             fprintf(outfile, "Hi, I am process %d with return arg %d. I found the hidden key in position A[%d]\n", getpid(), id, i);
             fflush(outfile);
         }
@@ -84,116 +97,96 @@ void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int 
     }
     double avg = ((double)sum) / ((double)nums_length);
 
-    // wait for left child
-    int local_max_left = -1;
-    int num_keys_left = -1;
-    if (id * 2 + 1 < n)
-    {
-        int max_l;
-        double avg_l;
-        int keys_l;
+    int max_p = max;
 
+    // wait for left child
+    int max_l;
+    double avg_l;
+    int keys_l;
+    if (left_child)
+    {
         read(max_pipe_l[0], &max_l, sizeof(max_l));
         read(avg_pipe_l[0], &avg_l, sizeof(avg_l));
         read(keys_pipe_l[0], &keys_l, sizeof(keys_l));
-
-        local_max_left = max_l;
+        
         if (max_l > max)
         {
             max = max_l;
         }
 
         if (keys_l > 0){
-            num_keys += 1;
+            keys += 1;
         }
 
         avg += avg_l;
-        num_keys_left = keys_l;
     }
 
     // wait for right child
-    int local_max_right = -1;
-    int num_keys_right = -1;
-    if (id * 2 + 2 < n)
+    int max_r;
+    double avg_r;
+    int keys_r;
+    if (right_child)
     {
-        int max_r;
-        double avg_r;
-        int keys_r;
-
         read(max_pipe_r[0], &max_r, sizeof(max_r));
         read(avg_pipe_r[0], &avg_r, sizeof(avg_r));
         read(keys_pipe_r[0], &keys_r, sizeof(keys_r));
 
-        local_max_right = max_r;
         if (max_r > max)
         {
             max = max_r;
         }
 
         if (keys_r > 0){
-            num_keys += 1;
+            keys += 1;
         }
 
         avg += avg_r;
-        num_keys_right = keys_r;
     }
 
-    // if localMax(child) > localMax(Parent) or localMAX(child) > localMAXs, then send signal to continue
-    // check to see if child process exists and not parent process
-    if (local_max_left != -1 && local_max_right != -1 && left_child_pid != 0 && right_child_pid != 0)
-    {
-        if (local_max_left > max)
-        {
-            sleep(1000);
-            system("pstree");
-            signal(left_child_pid, (void (*)(int))SIGCONT);
+    // signals left child
+    if (left_child){
+        if ((max_l > max_p) || (max_l > max_r)){
+            kill(left_child_pid, SIGCONT);
         }
-        else if (num_keys_left != -1 && num_keys_left > H)
-        {
-            signal(left_child_pid, (void (*)(int))SIGKILL);
+        else if (keys_l >= H){
+            kill(left_child_pid, SIGKILL);
         }
-        else
-        {
-            sleep(20);
-            system("pstree");
-            signal(left_child_pid, (void (*)(int))SIGCONT);
-        }
-        if (local_max_right > max)
-        {
-            sleep(1000);
-            sleep(20);
-            system("pstree");
-            signal(left_child_pid, (void (*)(int))SIGCONT);
-        }
-        else if (num_keys_right != -1 && num_keys_right > H)
-        {
-            signal(right_child_pid, (void (*)(int))SIGKILL);
-        }
-        else
-        {
-            sleep(20);
-            system("pstree");
-            signal(right_child_pid, (void (*)(int))SIGCONT);
+        else{
+            kill(left_child_pid, SIGCONT);
         }
     }
+
+    // signals right child
+    if (right_child){
+        if ((max_r > max_p) || (max_r > max_l)){
+            kill(right_child_pid, SIGCONT);
+        }
+        else if (keys_r >= H){
+            kill(right_child_pid, SIGKILL);
+        }
+        else{
+            kill(right_child_pid, SIGCONT);
+        }
+    }
+
     // write result to pipes
     write(max_pipe[1], &max, sizeof(max));
     write(avg_pipe[1], &avg, sizeof(avg));
-    write(keys_pipe[1], &num_keys, sizeof(num_keys));
+    write(keys_pipe[1], &keys, sizeof(keys));
+
     // exit if not main parent
     if (id != 0)
     {
         // pause child process
-        // signal(SIGTSTP, handle_signal);
         raise(SIGTSTP);
-
+        
+        // edit with return of id
         _exit(id);
     }
 }
 
-int solve_bfs_signals(char *filename, int *max, double *avg, int *keys, int H, int pn, FILE *outfile)
+int solve_bfs_signal_new(char *filename, int *max, double *avg, int *keys, int H, int pn, FILE *outfile)
 {
-
     // load data from file into array called nums
     arraylist_t data;
     al_alloc(&data, sizeof(int), 1);
