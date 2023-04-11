@@ -67,8 +67,9 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int
     int parent_child_fd[2];
     
     int pn;
+
+    pipe(parent_child_fd);
     for(pn = 0; pn < num_proc; pn++) {
-        int pc_res = pipe(parent_child_fd);
         pid_t pid = fork();
         //node val
 
@@ -81,6 +82,7 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int
         } else if(pid < 0) {
             // BIG ERROR
             // TODO: FINISH
+            pipe(parent_child_fd);
         }
     }
 
@@ -131,8 +133,11 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int
 
         // signal(child_pid, SIGCONT);
         sleep(2);
+        int x;
+        int bytes_read = read(parent_child_fd[0], &x, sizeof(int));
+        printf("bytes: %d; int: %d\n", bytes_read, x);
         printf("Sending cont signal to %d\n", child_pid);
-        signal(child_pid, (void (*)(int))SIGCONT);
+        kill(child_pid, (void (*)(int))SIGCONT);
         wait(NULL);
     }
     
@@ -167,6 +172,7 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int
     }
 
     if(pn) {
+        int bytes_written = write(parent_child_fd[1], &pn, sizeof(int));
         printf("Child has called SIGTSTP from pid %d\n", getpid());
         raise(SIGTSTP);
     }
