@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <sys/time.h>
+#define TIMEVAL_DIFF(tv_init, tv_final) ((double)((tv_final).tv_sec) + (double)((tv_final).tv_usec) / 1000000) - ((double)((tv_init).tv_sec) + (double)((tv_init).tv_usec) / 1000000)
+
 #include "dataset_generator.h"
 #include "arraylist.h"
 #include "dfs_solver.h"
