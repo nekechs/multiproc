@@ -47,7 +47,7 @@ int main(int argc, char ** argv) {
     FILE * bfs_outfile = fopen("./bfs_output.txt", "w");
 
     gettimeofday(&tv_init, NULL);
-    solve_bfs(INPUT_FILE, &bfs_max, &bfs_mean, PN, bfs_outfile);
+    solve_bfs(INPUT_FILE, &bfs_max, &bfs_mean, PN, H, bfs_outfile);
     gettimeofday(&tv_final, NULL);
     printf("BFS took time %lf\n", TIMEVAL_DIFF(tv_init, tv_final));
 
