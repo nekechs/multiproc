@@ -14,7 +14,10 @@
 void handle_SIGCONT(int signum)
 {
     // handle SIGCONT the same in all cases for now
-    system("pstree");
+    char command[50];
+    printf("\n");
+    sprintf(command, "pstree -p %d; echo", getpid());
+    system(command);
     sleep(100);
 }
 
