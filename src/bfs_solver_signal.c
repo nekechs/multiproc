@@ -5,15 +5,19 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdbool.h>
+#include <signal.h>
 
 #include "bfs_solver_signal.h"
 #include "arraylist.h"
-#include <signal.h>
+
 
 void handle_SIGCONT(int signum)
 {
     // handle SIGCONT the same in all cases for now
-    system("pstree");
+    char command[50];
+    printf("\n");
+    sprintf(command, "pstree -p %d; echo", getpid());
+    system(command);
     sleep(100);
 }
 
@@ -185,7 +189,7 @@ void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int 
     }
 }
 
-int solve_bfs_signal_new(char *filename, int *max, double *avg, int *keys, int H, int pn, FILE *outfile)
+int solve_bfs_signal(char *filename, int *max, double *avg, int *keys, int pn, int H, FILE *outfile)
 {
     // load data from file into array called nums
     arraylist_t data;
