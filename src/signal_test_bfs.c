@@ -10,7 +10,7 @@ int main(int argc, char ** argv) {
     // initial parameters
     int L = 10000;
     int H = 30;
-    int PN = 10;
+    int PN = 5;
 
     // generate data
     generate_file("./xd.txt", 50, L, 400);

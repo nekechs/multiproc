@@ -15,8 +15,8 @@ void handle_SIGCONT(int signum)
 {
     // handle SIGCONT the same in all cases for now
     char command[50];
-    printf("\n");
-    sprintf(command, "pstree -p %d; echo", getpid());
+    sprintf(command, "pstree -p %d", getpid());
+    pstree(get_pid());
     system(command);
     sleep(100);
 }
@@ -177,6 +177,15 @@ void fork_tree(int n, int id, int *max_pipe, int *avg_pipe, int *keys_pipe, int 
     write(max_pipe[1], &max, sizeof(max));
     write(avg_pipe[1], &avg, sizeof(avg));
     write(keys_pipe[1], &keys, sizeof(keys));
+
+    // wait for child
+    if (left_child){
+        wait(NULL);
+    }
+
+    if (right_child){
+        wait(NULL);
+    }
 
     // exit if not main parent
     if (id != 0)
