@@ -40,3 +40,4 @@ memshare.o: memshare.h
 clean:
 	rm -rf *.o
 	rm -rf *.txt
+	rm -rf *.out
