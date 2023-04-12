@@ -57,6 +57,11 @@ void al_remove(arraylist_t * A, size_t index) {
     A->nmemb--;
 }
 
-void al_get(arraylist_t * A, size_t index, void * dst) {
+int al_get(arraylist_t * A, size_t index, void * dst) {
+    if(index >= A->nmemb) {
+        return -1;
+    }
+    
     memcpy(dst, A->data + index * A->elemsize_bytes, A->elemsize_bytes);
+    return 0;
 }

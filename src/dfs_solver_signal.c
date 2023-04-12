@@ -17,6 +17,18 @@
 
 #define BUF_SIZE 256
 
+struct dfs_chunk_signal dfs_chunk_signal_merge(const struct dfs_chunk_signal * left, const struct dfs_chunk_signal * right) {
+    struct dfs_chunk_signal result;
+    result.max = left->max > right->max ? left->max : right-> max;      // Grab the maximum value of the combined set.
+    result.nmemb = left->nmemb + right->nmemb;                          // Add to find total number combined in both sets
+    result.mean = (left->mean * left->nmemb + right->mean * right->nmemb) / result.nmemb;
+    result.num_key = left->num_key + right->num_key;
+    result.num_hidden_numbers = 0;
+    result.child_pid = 0;
+
+    return result;
+}
+
 struct dfs_chunk dfs_chunk_merge(const struct dfs_chunk * left, const struct dfs_chunk * right) {
     struct dfs_chunk result;
     result.max = left->max > right->max ? left->max : right-> max;      // Grab the maximum value of the combined set.
@@ -57,18 +69,21 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int
         num_proc = A.nmemb;
     }
    
+    /* This is for the parent to receive all of the chunks. */
     int chunk_fd[2];
     int res = pipe(chunk_fd);
+
+    /* This is for the parent to receive statuses of the children. */
+    int hiddenkey_pipe[2];
+    pipe(hiddenkey_pipe);
 
     /* Initialize the counter that keeps track of hidden keys */
     counter_sync_t * count = csync_init();
 
     pid_t child_pid = 0;
-    int parent_child_fd[2];
     
     int pn;
 
-    pipe(parent_child_fd);
     for(pn = 0; pn < num_proc; pn++) {
         pid_t pid = fork();
         //node val
@@ -82,14 +97,52 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int
         } else if(pid < 0) {
             // BIG ERROR
             // TODO: FINISH
-            pipe(parent_child_fd);
         }
     }
 
     arraylist_t key_index_list;
-    al_alloc(&key_index_list, sizeof(int), (H + 1) / 2);
+    al_alloc(&key_index_list, sizeof(key_md_t), (H + 1) / 2);
 
-    if(pn != 0) {
+    struct dfs_chunk_signal final_ans;
+
+    if(pn == 0) {
+        /* In the root level process --- Pick up all of the metrics from the children */
+        struct dfs_chunk_signal acc = {
+            .nmemb = 0,
+            .mean = 0,
+            .max = INT_MIN,
+            .num_key = 0,
+            .child_pid = 0,
+            .num_hidden_numbers = 0
+        };
+        struct dfs_chunk_signal current;
+        for(int i = 0; i < num_proc; i++) {
+            int x;
+            // int bytes_read = read(*(fd_list + 2*i), &current, sizeof(struct dfs_chunk));
+            int bytes_read = read(chunk_fd[0], &current, sizeof(struct dfs_chunk_signal));
+
+            /* This is the place where the signal decisions are made! */            
+            if( current.max > acc.max) {
+                // FIRST DECISION BRANCH - Send sigcont.
+                kill(current.child_pid, SIGCONT);
+                key_md_t key_info;
+                int bytes_read = read(hiddenkey_pipe[0], &key_info, sizeof(key_md_t));
+                al_insert(&key_index_list, key_index_list.nmemb, &key_info);
+            } else if( current.num_hidden_numbers >= H) {
+                // SECOND DECISION BRANCH
+                kill(current.child_pid, SIGKILL);
+            } else {
+                // THIRD DECISION BRANCH
+                kill(current.child_pid, SIGCONT);
+                key_md_t key_info;
+                int bytes_read = read(hiddenkey_pipe[0], &key_info, sizeof(key_md_t));
+                al_insert(&key_index_list, key_index_list.nmemb, &key_info);
+            }
+
+            acc = dfs_chunk_signal_merge(&acc, &current);
+        }
+        final_ans = acc;
+    } else {
         /* If we are in a spawned process, we will compute the relevant metrics for this chunk */
 
         int pipe_num = pn - 1;
@@ -108,9 +161,14 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int
             if(num > max) max = num;
             if(num == -1) {
                 num_key++;
-                
+
                 /* because this is the SIGNAL variant, we need to store all of the hidden keys so that we potentially */
-                al_insert(&key_index_list, key_index_list.nmemb, &i);
+                key_md_t key = {
+                    .discoverer = getpid(),
+                    .index = i,
+                    .return_arg = pn
+                };
+                al_insert(&key_index_list, key_index_list.nmemb, &key);
 
                 if(csync_view(count) < H) {
                     fprintf(outfile, "Hi, I am process %d with return arg %d. I found the hidden key in position A[%d]\n", getpid(), pn, i);
@@ -120,62 +178,40 @@ int solve_dfs_signal(char * filename, int * max, double * avg, int num_proc, int
             sum += num;
         }
 
-        struct dfs_chunk answer;
+        struct dfs_chunk_signal answer;
         answer.nmemb = upper - lower;
         answer.max = max;
         answer.mean = ((double)sum) / answer.nmemb;
         answer.num_key = num_key;
+        answer.child_pid = getpid();
+        answer.num_hidden_numbers = key_index_list.nmemb;
         // int bytes_written = write(*(fd_list + 2*pipe_num + 1), &answer, sizeof(struct dfs_chunk));
-        int bytes_written = write(chunk_fd[1], &answer, sizeof(struct dfs_chunk));
-    }
-    
-    if (pn != num_proc) {
+        int bytes_written = write(chunk_fd[1], &answer, sizeof(struct dfs_chunk_signal));
 
-        // signal(child_pid, SIGCONT);
-        sleep(2);
-        int x;
-        int bytes_read = read(parent_child_fd[0], &x, sizeof(int));
-        printf("bytes: %d; int: %d\n", bytes_read, x);
-        printf("Sending cont signal to %d\n", child_pid);
-        kill(child_pid, (void (*)(int))SIGCONT);
-        wait(NULL);
+        raise(SIGTSTP);
+
+        // We don't care what happens: Send over one hidden key!!!
+        
+        key_md_t key_info;
+        al_get(&key_index_list, 0, &key_info);
+        bytes_written = write(hiddenkey_pipe[1], &key_info, sizeof(key_md_t));
     }
     
     al_free(&key_index_list);
     al_free(&A);
 
-    struct dfs_chunk final_ans;
-    if(pn == 0) {
-        /* In the root level process --- Pick up all of the metrics from the children */
-        struct dfs_chunk acc = {
-            .nmemb = 0,
-            .mean = 0,
-            .max = INT_MIN,
-            .num_key = 0
-        };
-        struct dfs_chunk current;
-        for(int i = 0; i < num_proc; i++) {
-            int x;
-            // int bytes_read = read(*(fd_list + 2*i), &current, sizeof(struct dfs_chunk));
-            int bytes_read = read(chunk_fd[0], &current, sizeof(struct dfs_chunk));
-            acc = dfs_chunk_merge(&acc, &current);
-        }
-        final_ans = acc;
-    }
-
     if(pn == 0 && max && avg) {
+
         *max = final_ans.max;
         *avg = final_ans.mean;
         // printf("%lf\n", *avg);
         fprintf(outfile, "Max=%d, Avg=%lf\n", final_ans.max, final_ans.mean);
+        wait(NULL);
         return final_ans.num_key;
     }
 
-    if(pn) {
-        int bytes_written = write(parent_child_fd[1], &pn, sizeof(int));
-        printf("Child has called SIGTSTP from pid %d\n", getpid());
-        raise(SIGTSTP);
+    if(pn != num_proc) {
+        wait(NULL);
     }
-    printf("bruh\n");
     exit(pn);
 }

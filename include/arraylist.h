@@ -39,7 +39,9 @@ void al_remove(arraylist_t * A, size_t index);
 
 /**
  * Retrieves an element and copies over the data into dst.
+ * 
+ * If invalid access, returns -1. Returns 0 on success.
 */
-void al_get(arraylist_t * A, size_t index, void * dst);
+int al_get(arraylist_t * A, size_t index, void * dst);
 
 #endif

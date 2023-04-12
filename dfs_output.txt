@@ -1,0 +1,13 @@
+Hi, I am process 56414 with return arg 1, and my parent is 56413.
+Hi, I am process 56414 with return arg 1. I found the hidden key in position A[635]
+Hi, I am process 56414 with return arg 1. I found the hidden key in position A[3720]
+Hi, I am process 56414 with return arg 1. I found the hidden key in position A[8062]
+Hi, I am process 56414 with return arg 1. I found the hidden key in position A[10642]
+Hi, I am process 56414 with return arg 1. I found the hidden key in position A[10698]
+Hi, I am process 56414 with return arg 1. I found the hidden key in position A[10855]
+Hi, I am process 56414 with return arg 1. I found the hidden key in position A[11803]
+Hi, I am process 56414 with return arg 1. I found the hidden key in position A[13586]
+Hi, I am process 56414 with return arg 1. I found the hidden key in position A[14865]
+Hi, I am process 56414 with return arg 1. I found the hidden key in position A[17777]
+Hi, I am process 56413 with return arg 0, and my parent is 52982.
+Max=399, Avg=199.225580
